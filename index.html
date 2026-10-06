@@ -91,6 +91,27 @@
     .restart { margin-top: 1rem; }
     .confetti { position: fixed; top: -20px; width: 12px; height: 18px; z-index: 99; animation: fall 3.5s linear forwards; }
     @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+    .scene { border: 3px solid #a5d6a7; border-radius: 20px; overflow: hidden; margin: 0 0 1rem; box-shadow: 0 6px 0 #c5e1a5; }
+    .scene svg { display: block; width: 100%; height: auto; }
+    .drift1 { animation: drift 46s linear infinite; }
+    .drift2 { animation: drift 65s linear infinite; animation-delay: -20s; }
+    .drift3 { animation: drift 56s linear infinite; animation-delay: -38s; }
+    @keyframes drift { from { transform: translateX(-170px); } to { transform: translateX(710px); } }
+    .ray-spin { transform-box: fill-box; transform-origin: center; animation: spin 48s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .birdfly1 { animation: flyacross 26s linear infinite; animation-delay: -6s; }
+    .birdfly2 { animation: flyacross 34s linear infinite; animation-delay: -19s; }
+    .birdfly3 { animation: flyacross 43s linear infinite; animation-delay: -30s; }
+    @keyframes flyacross { from { transform: translate(-80px, 0); } to { transform: translate(720px, -16px); } }
+    .bob { animation: bob 1.6s ease-in-out infinite; }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .flapL { transform-box: fill-box; transform-origin: right center; animation: flap .55s ease-in-out infinite; }
+    .flapR { transform-box: fill-box; transform-origin: left center; animation: flap .55s ease-in-out infinite; }
+    @keyframes flap { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(.25); } }
+    .float1 { animation: floaty 7s ease-in-out infinite; }
+    .float2 { animation: floaty 9s ease-in-out infinite; animation-delay: -3s; }
+    .float3 { animation: floaty 8s ease-in-out infinite; animation-delay: -5s; }
+    @keyframes floaty { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(26px, -20px); } 50% { transform: translate(52px, 0); } 75% { transform: translate(26px, 18px); } }
   </style>
 </head>
 <body>
@@ -100,6 +121,166 @@
       <h1>Caça ao Tesouro</h1>
       <p class="sub">Colégio Helena • Clube dos Exploradores</p>
     </header>
+
+    <div class="scene" aria-label="Mundo da natureza com árvores, borboletas e pássaros">
+      <svg viewBox="0 0 640 300">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#6fbfe8"/>
+            <stop offset=".65" stop-color="#c9ecf7"/>
+            <stop offset="1" stop-color="#eef9ee"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="640" height="300" fill="url(#sky)"/>
+
+        <!-- sol -->
+        <g transform="translate(560,52)">
+          <circle r="36" fill="#fff59d" opacity=".5"/>
+          <circle r="24" fill="#fdd835"/>
+          <g class="ray-spin" stroke="#fdd835" stroke-width="5" stroke-linecap="round">
+            <line x1="0" y1="-34" x2="0" y2="-44"/>
+            <line x1="0" y1="34" x2="0" y2="44"/>
+            <line x1="-34" y1="0" x2="-44" y2="0"/>
+            <line x1="34" y1="0" x2="44" y2="0"/>
+            <line x1="-24" y1="-24" x2="-31" y2="-31"/>
+            <line x1="24" y1="-24" x2="31" y2="-31"/>
+            <line x1="-24" y1="24" x2="-31" y2="31"/>
+            <line x1="24" y1="24" x2="31" y2="31"/>
+          </g>
+        </g>
+
+        <!-- nuvens -->
+        <g transform="translate(0,44)"><g class="drift1" fill="#fff" opacity=".95">
+          <ellipse cx="0" cy="0" rx="34" ry="16"/><ellipse cx="28" cy="-8" rx="26" ry="15"/><ellipse cx="56" cy="0" rx="30" ry="14"/>
+        </g></g>
+        <g transform="translate(0,96)"><g class="drift2" fill="#fff" opacity=".9">
+          <ellipse cx="0" cy="0" rx="26" ry="12"/><ellipse cx="24" cy="-7" rx="20" ry="12"/><ellipse cx="46" cy="0" rx="24" ry="11"/>
+        </g></g>
+        <g transform="translate(0,24)"><g class="drift3" fill="#fff" opacity=".85">
+          <ellipse cx="0" cy="0" rx="22" ry="10"/><ellipse cx="20" cy="-6" rx="17" ry="10"/><ellipse cx="40" cy="0" rx="20" ry="9"/>
+        </g></g>
+
+        <!-- pássaros voando -->
+        <g transform="translate(0,70)"><g class="birdfly1"><g class="bob">
+          <path d="M0,0 Q7,-8 14,0 Q21,-8 28,0" stroke="#37474f" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        </g></g></g>
+        <g transform="translate(0,110)"><g class="birdfly2"><g class="bob">
+          <path d="M0,0 Q6,-7 12,0 Q18,-7 24,0" stroke="#455a64" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g></g></g>
+        <g transform="translate(0,46)"><g class="birdfly3"><g class="bob">
+          <path d="M0,0 Q8,-9 16,0 Q24,-9 32,0" stroke="#37474f" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g></g></g>
+
+        <!-- colinas e chão -->
+        <ellipse cx="140" cy="300" rx="280" ry="70" fill="#9ccc65"/>
+        <ellipse cx="520" cy="305" rx="300" ry="75" fill="#aed581"/>
+        <rect x="0" y="248" width="640" height="52" fill="#7cb342"/>
+
+        <!-- pinheiro ao fundo -->
+        <g transform="translate(330,190)">
+          <rect x="-7" y="30" width="14" height="30" fill="#6d4c41"/>
+          <polygon points="0,-52 -34,10 34,10" fill="#2e7d32"/>
+          <polygon points="0,-30 -40,34 40,34" fill="#388e3c"/>
+        </g>
+
+        <!-- árvore grande -->
+        <g transform="translate(105,0)">
+          <rect x="-13" y="170" width="26" height="85" rx="10" fill="#6d4c41"/>
+          <line x1="-10" y1="200" x2="-10" y2="250" stroke="#4e342e" stroke-width="3"/>
+          <line x1="8" y1="195" x2="8" y2="250" stroke="#4e342e" stroke-width="3"/>
+          <line x1="0" y1="180" x2="-34" y2="150" stroke="#6d4c41" stroke-width="10" stroke-linecap="round"/>
+          <line x1="0" y1="175" x2="36" y2="145" stroke="#6d4c41" stroke-width="10" stroke-linecap="round"/>
+          <g fill="#1b5e20">
+            <circle cx="0" cy="105" r="58"/><circle cx="-48" cy="125" r="38"/><circle cx="48" cy="125" r="38"/>
+          </g>
+          <g fill="#2e7d32">
+            <circle cx="0" cy="95" r="46"/><circle cx="-38" cy="115" r="30"/><circle cx="38" cy="115" r="30"/>
+          </g>
+          <g fill="#66bb6a">
+            <circle cx="-18" cy="80" r="16"/><circle cx="16" cy="72" r="18"/><circle cx="34" cy="100" r="13"/><circle cx="-36" cy="102" r="13"/>
+          </g>
+          <g fill="#e53935">
+            <circle cx="-24" cy="112" r="6"/><circle cx="10" cy="122" r="6"/><circle cx="34" cy="92" r="6"/><circle cx="-2" cy="88" r="6"/>
+          </g>
+          <!-- passarinho no galho -->
+          <g transform="translate(-34,138)">
+            <line x1="0" y1="14" x2="0" y2="22" stroke="#4e342e" stroke-width="2"/>
+            <line x1="8" y1="14" x2="8" y2="22" stroke="#4e342e" stroke-width="2"/>
+            <rect x="-16" y="2" width="16" height="8" rx="4" transform="rotate(30)" fill="#1e88e5"/>
+            <ellipse cx="8" cy="6" rx="11" ry="13" fill="#42a5f5"/>
+            <circle cx="12" cy="-8" r="8" fill="#42a5f5"/>
+            <polygon points="20,-9 27,-6 20,-3" fill="#fb8c00"/>
+            <circle cx="14" cy="-10" r="2" fill="#222"/>
+          </g>
+        </g>
+
+        <!-- ipê florido -->
+        <g transform="translate(520,0)">
+          <rect x="-11" y="175" width="22" height="80" rx="9" fill="#6d4c41"/>
+          <line x1="0" y1="185" x2="-30" y2="155" stroke="#6d4c41" stroke-width="9" stroke-linecap="round"/>
+          <line x1="0" y1="180" x2="32" y2="150" stroke="#6d4c41" stroke-width="9" stroke-linecap="round"/>
+          <g fill="#388e3c">
+            <circle cx="0" cy="115" r="48"/><circle cx="-40" cy="132" r="30"/><circle cx="40" cy="132" r="30"/>
+          </g>
+          <g fill="#f8bbd0">
+            <circle cx="-14" cy="100" r="13"/><circle cx="12" cy="92" r="14"/><circle cx="34" cy="114" r="12"/>
+            <circle cx="-36" cy="120" r="12"/><circle cx="2" cy="122" r="13"/><circle cx="-4" cy="76" r="11"/>
+          </g>
+          <g fill="#f48fb1">
+            <circle cx="-8" cy="96" r="5"/><circle cx="18" cy="110" r="5"/><circle cx="-28" cy="116" r="5"/><circle cx="6" cy="70" r="4"/>
+          </g>
+        </g>
+
+        <!-- arbustos -->
+        <g fill="#43a047">
+          <circle cx="230" cy="252" r="22"/><circle cx="256" cy="256" r="17"/><circle cx="208" cy="257" r="15"/>
+          <circle cx="420" cy="255" r="20"/><circle cx="442" cy="258" r="15"/>
+        </g>
+
+        <!-- flores -->
+        <g>
+          <line x1="280" y1="258" x2="280" y2="284" stroke="#2e7d32" stroke-width="4"/>
+          <g fill="#fff"><circle cx="280" cy="250" r="6"/><circle cx="273" cy="254" r="6"/><circle cx="287" cy="254" r="6"/><circle cx="275" cy="260" r="6"/><circle cx="285" cy="260" r="6"/></g>
+          <circle cx="280" cy="256" r="5" fill="#fdd835"/>
+          <line x1="330" y1="262" x2="330" y2="286" stroke="#2e7d32" stroke-width="4"/>
+          <g fill="#ef5350"><circle cx="330" cy="254" r="6"/><circle cx="323" cy="258" r="6"/><circle cx="337" cy="258" r="6"/><circle cx="325" cy="264" r="6"/><circle cx="335" cy="264" r="6"/></g>
+          <circle cx="330" cy="260" r="5" fill="#fdd835"/>
+          <line x1="470" y1="260" x2="470" y2="285" stroke="#2e7d32" stroke-width="4"/>
+          <g fill="#ab47bc"><circle cx="470" cy="252" r="6"/><circle cx="463" cy="256" r="6"/><circle cx="477" cy="256" r="6"/><circle cx="465" cy="262" r="6"/><circle cx="475" cy="262" r="6"/></g>
+          <circle cx="470" cy="258" r="5" fill="#fdd835"/>
+          <line x1="60" y1="264" x2="60" y2="288" stroke="#2e7d32" stroke-width="4"/>
+          <g fill="#ffa000"><circle cx="60" cy="256" r="6"/><circle cx="53" cy="260" r="6"/><circle cx="67" cy="260" r="6"/><circle cx="55" cy="266" r="6"/><circle cx="65" cy="266" r="6"/></g>
+          <circle cx="60" cy="262" r="5" fill="#fff59d"/>
+        </g>
+
+        <!-- grama -->
+        <g fill="#558b2f">
+          <polygon points="150,292 156,276 162,292"/><polygon points="360,294 366,278 372,294"/>
+          <polygon points="500,292 506,276 512,292"/><polygon points="30,294 36,280 42,294"/>
+          <polygon points="590,294 596,280 602,294"/><polygon points="250,296 256,282 262,296"/>
+        </g>
+
+        <!-- borboletas -->
+        <g transform="translate(150,210)"><g class="float1">
+          <ellipse class="flapL" cx="-10" cy="0" rx="11" ry="15" fill="#fb8c00"/>
+          <ellipse class="flapR" cx="10" cy="0" rx="11" ry="15" fill="#fb8c00"/>
+          <circle cx="-10" cy="-4" r="4" fill="#fff"/><circle cx="10" cy="-4" r="4" fill="#fff"/>
+          <line x1="0" y1="-9" x2="0" y2="9" stroke="#4e342e" stroke-width="4" stroke-linecap="round"/>
+        </g></g>
+        <g transform="translate(400,180)"><g class="float2">
+          <ellipse class="flapL" cx="-9" cy="0" rx="10" ry="13" fill="#1e88e5"/>
+          <ellipse class="flapR" cx="9" cy="0" rx="10" ry="13" fill="#1e88e5"/>
+          <circle cx="-9" cy="-3" r="3.5" fill="#bbdefb"/><circle cx="9" cy="-3" r="3.5" fill="#bbdefb"/>
+          <line x1="0" y1="-8" x2="0" y2="8" stroke="#37474f" stroke-width="4" stroke-linecap="round"/>
+        </g></g>
+        <g transform="translate(300,150)"><g class="float3">
+          <ellipse class="flapL" cx="-8" cy="0" rx="9" ry="12" fill="#fdd835"/>
+          <ellipse class="flapR" cx="8" cy="0" rx="9" ry="12" fill="#fdd835"/>
+          <circle cx="-8" cy="-3" r="3" fill="#fff"/><circle cx="8" cy="-3" r="3" fill="#fff"/>
+          <line x1="0" y1="-7" x2="0" y2="7" stroke="#4e342e" stroke-width="3.5" stroke-linecap="round"/>
+        </g></g>
+      </svg>
+    </div>
 
     <div class="progress" id="progress" hidden>
       <div class="bar"><div id="barfill"></div></div>
