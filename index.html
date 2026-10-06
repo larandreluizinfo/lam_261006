@@ -84,6 +84,8 @@
     }
     @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
     .treasure { font-size: 4rem; }
+    .mascot { width: 170px; height: auto; }
+    .speech { font-size: 1.05rem; background: #e8f5e9; border-radius: 14px; padding: .8rem 1rem; }
     .word { font-size: 2rem; font-weight: 900; letter-spacing: .3rem; color: #1b5e20; }
     footer { text-align: center; margin: 1.2rem 0; color: #689f38; font-size: .9rem; }
     .restart { margin-top: 1rem; }
@@ -193,6 +195,8 @@
     function renderStart() {
       app.innerHTML = `
         <h2>🌳 A aventura vai começar! 🌳</h2>
+        <img class="mascot" src="exploradora.svg" alt="Helena, menina de cabelos enrolados com uniforme do Colégio Helena e All Star preto">
+        <p class="speech">Oi! Eu sou a <strong>Helena</strong>, sua guia exploradora! 🧭</p>
         <p class="riddle">O <strong>Baú Verde</strong> do Colégio Helena está escondido!
         Para achá-lo, decifre os <strong>6 enigmas da natureza</strong>.
         Cada resposta certa revela uma <strong>letra secreta</strong>.
