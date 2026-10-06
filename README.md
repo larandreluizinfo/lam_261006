@@ -8,6 +8,11 @@ Projeto feito por Lívia, Alice e Maria Luíza do 4º A.
 
 🌿 Jogo: Caça ao Tesouro do Colégio Helena — decifre os 6 enigmas da natureza e ache o Baú Verde!
 
-🕹️ Nível 1: A Chave Perdida — plataforma com moedas no caminho e a chave no final!
+🕹️ 100 Níveis — plataforma com moedas no caminho e a chave no final de cada fase!
 
-⚠️ Obstáculos: troncos caídos, espinhos e armadilhas. A exploradora tem 3 vidas! Checkpoint no meio do caminho.
+⚠️ Obstáculos: troncos caídos, espinhos e armadilhas. A exploradora tem 3 vidas! Checkpoint recupera 1 ❤️.
+
+🛍️ Loja — gaste suas moedas com:
+- 👟 Sapatos: Tênis Leve, Botas de Mola, All Star Dourado (velocidade e pulo)
+- 👕 Roupas: Uniforme Helena, Roupa de Selva, Super Exploradora (visual)
+- ✨ Poderes: Ímã de Moedas, Escudo Protetor, Pulo Duplo
