@@ -387,7 +387,8 @@
         <p class="speech">Oi! Eu sou a <strong>Helena</strong>, sua guia exploradora! 🧭</p>
         <p class="riddle">O <strong>Baú Verde</strong> do Colégio Helena está escondido!
         Decifre os <strong>6 enigmas da natureza</strong> ou jogue o
-        <strong>Nível 1</strong>: pegue as moedas no caminho e conquiste a chave! 🗺️</p>
+        <strong>Nível 1</strong>: pegue as moedas no caminho e conquiste a chave!
+        Cuidado com troncos, espinhos e armadilhas — você tem 3 vidas! 🗺️</p>
         <p><button id="goRiddles">🔍 Enigmas da Natureza</button></p>
         <p><button id="goPlay">🕹️ Nível 1: A Chave Perdida</button></p>`;
       document.getElementById("goRiddles").onclick = () => {
@@ -462,23 +463,36 @@
     }
 
     /* ---------- Nível 1: plataforma, moedas e chave ---------- */
-    const WORLD_W = 1600;
+    const WORLD_W = 1640;
     const PLATS = [
       { x: -40, y: 320, w: 460, h: 80 },
-      { x: 520, y: 320, w: 480, h: 80 },
+      { x: 500, y: 320, w: 500, h: 80 },
       { x: 620, y: 238, w: 110, h: 18 },
       { x: 790, y: 178, w: 110, h: 18 },
       { x: 960, y: 238, w: 110, h: 18 },
-      { x: 1120, y: 320, w: 520, h: 80 },
-      { x: 1400, y: 228, w: 130, h: 18 }
+      { x: 1120, y: 320, w: 560, h: 80 },
+      { x: 1420, y: 240, w: 160, h: 18 }
     ];
     const COIN_SPOTS = [
-      [300, 272], [344, 252], [388, 252],
-      [440, 222], [472, 202], [504, 222],
+      [280, 272], [340, 252],
+      [440, 222], [465, 202], [490, 222],
+      [560, 286], [700, 286], [860, 286],
       [657, 204], [712, 204], [827, 144], [997, 204],
-      [700, 286], [900, 286], [1200, 286], [1300, 286]
+      [1030, 222], [1055, 202], [1080, 222],
+      [1255, 286], [1350, 270]
     ];
-    const KEY_SPOT = { x: 1450, y: 188, w: 34, h: 32 };
+    const KEY_SPOT = { x: 1520, y: 200, w: 34, h: 32 };
+    const LOGS = [
+      { x: 150, y: 294, w: 70, h: 26 },
+      { x: 1300, y: 294, w: 70, h: 26 }
+    ];
+    const SPIKES = [
+      { x: 600, y: 320, w: 44 },
+      { x: 900, y: 320, w: 44 },
+      { x: 1380, y: 320, w: 44 }
+    ];
+    const TRAPS = [ { x: 740, w: 70 }, { x: 1180, w: 60 } ];
+    const CHECKPOINT = { x: 1140 };
 
     function stopLoop() {
       if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
@@ -507,11 +521,15 @@
       const ctx = cv.getContext("2d");
       const W = 640, H = 360;
       const coins = COIN_SPOTS.map(([x, y]) => ({ x, y, got: false }));
+      const traps = TRAPS.map((t) => ({ x: t.x, w: t.w, armed: false, anim: 0 }));
       const p = { x: 40, y: 200, w: 26, h: 36, vx: 0, vy: 0, grounded: false, face: 1 };
       const keys = { left: false, right: false, jump: false };
-      let got = 0, frame = 0, over = false;
+      const spawn = { x: 40, y: 200 };
+      let got = 0, frame = 0, over = false, lives = 3, inv = 0;
+      let cpGot = false, cpToast = 0;
       const hud = document.getElementById("hud");
-      const showHud = () => { hud.textContent = `🪙 ${got}/${coins.length}  •  Chegue até a chave! ➡️`; };
+      const hearts = () => "❤️".repeat(lives) + "🤍".repeat(3 - lives);
+      const showHud = () => { hud.textContent = `${hearts()}  🪙 ${got}/${coins.length}  •  Chegue até a chave! ➡️`; };
       showHud();
 
       function bindBtn(id, prop) {
@@ -540,28 +558,71 @@
         return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
       }
 
+      function hurt() {
+        if (inv > 0 || over) return;
+        lives--; showHud();
+        if (lives <= 0) { gameOver(); return; }
+        inv = 90; p.vy = -9;
+      }
+
+      function gameOver() {
+        over = true;
+        cleanup();
+        app.innerHTML = `
+          <div class="treasure">😵💔</div>
+          <h2>SEM VIDAS! TENTE DE NOVO!</h2>
+          <p class="riddle">Os obstáculos te pegaram!<br>
+          Moedas coletadas: <strong>🪙 ${got}/${coins.length}</strong></p>
+          <p><button id="retry">🔄 Tentar de novo</button></p>
+          <p class="restart"><button id="goM2" class="ghost">🏠 Menu</button></p>`;
+        document.getElementById("retry").onclick = renderPlatform;
+        document.getElementById("goM2").onclick = toMenu;
+      }
+
       function update() {
         p.vx = keys.left ? -3.6 : keys.right ? 3.6 : 0;
         if (p.vx !== 0) p.face = p.vx > 0 ? 1 : -1;
-        p.vy = Math.min(p.vy + 0.55, 12);
+        p.vy = Math.min(p.vy + 0.6, 12);
         p.x = Math.max(0, Math.min(WORLD_W - p.w, p.x + p.vx));
         const prevBottom = p.y + p.h;
         p.y += p.vy;
         p.grounded = false;
-        for (const pl of PLATS) {
+        for (const pl of PLATS.concat(LOGS)) {
           if (p.x + p.w > pl.x && p.x < pl.x + pl.w &&
               p.vy >= 0 && prevBottom <= pl.y + 1 && p.y + p.h >= pl.y) {
             p.y = pl.y - p.h; p.vy = 0; p.grounded = true;
           }
         }
-        if (keys.jump && p.grounded) { p.vy = -12; p.grounded = false; keys.jump = false; }
+        if (keys.jump && p.grounded) { p.vy = -11; p.grounded = false; keys.jump = false; }
+        for (const lg of LOGS) {
+          if (p.y + p.h > lg.y + 10 &&
+              overlap(p, { x: lg.x + 6, y: lg.y + 8, w: lg.w - 12, h: lg.h - 8 })) hurt();
+        }
+        for (const s of SPIKES) {
+          if (overlap(p, { x: s.x + 6, y: s.y - 18, w: s.w - 12, h: 18 })) hurt();
+        }
+        for (const t of traps) {
+          if (!t.armed && Math.abs(p.x + p.w / 2 - (t.x + t.w / 2)) < 80) t.armed = true;
+          if (t.armed && t.anim < 1) t.anim = Math.min(1, t.anim + 0.06);
+          if (t.anim > 0.5 && overlap(p, { x: t.x + 8, y: 320 - 26, w: t.w - 16, h: 26 })) hurt();
+        }
+        if (!cpGot && p.x + p.w > CHECKPOINT.x) {
+          cpGot = true; spawn.x = 1150; spawn.y = 220; cpToast = 120;
+        }
+        if (cpToast > 0) cpToast--;
+        if (inv > 0) inv--;
+        if (over) return;
         for (const c of coins) {
           if (!c.got && overlap(p, { x: c.x - 9, y: c.y - 9, w: 18, h: 18 })) {
             c.got = true; got++; showHud();
           }
         }
         if (!over && overlap(p, KEY_SPOT)) { over = true; win(); return; }
-        if (p.y > 430) { p.x = 40; p.y = 200; p.vx = 0; p.vy = 0; }
+        if (p.y > 430) {
+          if (inv === 0) { lives--; showHud(); }
+          if (lives <= 0) { gameOver(); return; }
+          p.x = spawn.x; p.y = spawn.y; p.vx = 0; p.vy = 0; inv = 90;
+        }
       }
 
       function drawTree(x, y, s) {
@@ -577,6 +638,8 @@
 
       function drawPlayer(camX) {
         const x = p.x - camX, y = p.y;
+        ctx.save();
+        if (inv > 0 && Math.floor(frame / 4) % 2 === 0) ctx.globalAlpha = 0.35;
         ctx.fillStyle = "#f6c391";
         ctx.fillRect(x + 6, y + 25, 6, 9);
         ctx.fillRect(x + 14, y + 25, 6, 9);
@@ -597,6 +660,7 @@
         ctx.beginPath(); ctx.arc(x + 21, y + 2, 3.5, 0, 7); ctx.fill();
         ctx.fillStyle = "#222";
         ctx.fillRect(p.face > 0 ? x + 15 : x + 8, y + 2, 3, 4);
+        ctx.restore();
       }
 
       function draw() {
@@ -618,6 +682,53 @@
           const x = pl.x - camX;
           ctx.fillStyle = "#8d6e63"; ctx.fillRect(x, pl.y, pl.w, pl.h);
           ctx.fillStyle = "#43a047"; ctx.fillRect(x, pl.y, pl.w, 8);
+        }
+        for (const lg of LOGS) {
+          const x = lg.x - camX;
+          ctx.fillStyle = "#5d4037";
+          ctx.fillRect(x, lg.y, lg.w, lg.h);
+          ctx.fillStyle = "#8d6e63";
+          ctx.fillRect(x, lg.y, lg.w, 7);
+          ctx.fillStyle = "#a1887f";
+          ctx.beginPath(); ctx.ellipse(x + 4, lg.y + lg.h / 2, 4, 9, 0, 0, 7); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(x + lg.w - 4, lg.y + lg.h / 2, 4, 9, 0, 0, 7); ctx.fill();
+        }
+        for (const s of SPIKES) {
+          const x = s.x - camX, n = 4, b = s.w / n;
+          ctx.fillStyle = "#90a4ae";
+          ctx.strokeStyle = "#37474f"; ctx.lineWidth = 2;
+          for (let i = 0; i < n; i++) {
+            ctx.beginPath();
+            ctx.moveTo(x + i * b, s.y);
+            ctx.lineTo(x + i * b + b / 2, s.y - 24);
+            ctx.lineTo(x + i * b + b, s.y);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+          }
+        }
+        for (const t of traps) {
+          const x = t.x - camX;
+          ctx.fillStyle = "#4e342e";
+          ctx.fillRect(x, 318, t.w, 5);
+          if (t.armed) {
+            const h = t.anim * 26, n = 3, b = (t.w - 16) / n;
+            ctx.fillStyle = "#ff7043";
+            for (let i = 0; i < n; i++) {
+              ctx.beginPath();
+              ctx.moveTo(x + 8 + i * b, 320);
+              ctx.lineTo(x + 8 + i * b + b / 2, 320 - h);
+              ctx.lineTo(x + 8 + i * b + b, 320);
+              ctx.closePath(); ctx.fill();
+            }
+          }
+        }
+        ctx.fillStyle = "#6d4c41";
+        ctx.fillRect(CHECKPOINT.x - camX, 240, 6, 80);
+        ctx.fillStyle = cpGot ? "#43a047" : "#bdbdbd";
+        ctx.fillRect(CHECKPOINT.x - camX + 6, 240, 40, 24);
+        if (cpToast > 0) {
+          ctx.fillStyle = "#1b5e20";
+          ctx.font = "bold 20px sans-serif";
+          ctx.fillText("Checkpoint! ✔", CHECKPOINT.x - camX - 40, 220);
         }
         for (const c of coins) {
           if (c.got) continue;
@@ -644,15 +755,15 @@
         ctx.stroke();
         ctx.restore();
         ctx.fillStyle = "#6d4c41";
-        ctx.fillRect(1560 - camX, 220, 6, 100);
+        ctx.fillRect(1600 - camX, 220, 6, 100);
         ctx.fillStyle = "#fff";
-        ctx.fillRect(1566 - camX, 220, 44, 14);
-        ctx.fillRect(1566 - camX, 234, 44, 14);
+        ctx.fillRect(1606 - camX, 220, 44, 14);
+        ctx.fillRect(1606 - camX, 234, 44, 14);
         ctx.fillStyle = "#222";
-        ctx.fillRect(1566 - camX, 220, 11, 14);
-        ctx.fillRect(1588 - camX, 220, 11, 14);
-        ctx.fillRect(1577 - camX, 234, 11, 14);
-        ctx.fillRect(1599 - camX, 234, 11, 14);
+        ctx.fillRect(1606 - camX, 220, 11, 14);
+        ctx.fillRect(1628 - camX, 220, 11, 14);
+        ctx.fillRect(1617 - camX, 234, 11, 14);
+        ctx.fillRect(1639 - camX, 234, 11, 14);
         drawPlayer(camX);
       }
 
