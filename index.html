@@ -3,26 +3,290 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>lam_261006</title>
+  <title>Caça ao Tesouro — Colégio Helena 🌿</title>
   <style>
-    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      background: linear-gradient(160deg, #e8f5e9 0%, #f7f5e6 55%, #fff8e1 100%);
+      color: #2e4a2b;
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .wrap { width: 100%; max-width: 640px; }
+    header { text-align: center; margin: 1rem 0 .5rem; }
+    header h1 { margin: .25rem 0; font-size: 2rem; color: #1b5e20; }
+    header .sub { margin: 0; font-weight: 600; color: #558b2f; }
+    .progress {
+      background: #fff;
+      border: 3px solid #a5d6a7;
+      border-radius: 999px;
+      padding: .5rem .9rem;
+      margin: 1rem 0;
+    }
+    .bar { height: 12px; background: #e0e0e0; border-radius: 999px; overflow: hidden; }
+    .bar > div { height: 100%; width: 0; background: linear-gradient(90deg, #66bb6a, #2e7d32); transition: width .4s; }
+    .letters { display: flex; gap: .4rem; justify-content: center; margin-top: .6rem; }
+    .slot {
+      width: 44px; height: 52px;
+      display: grid; place-items: center;
+      font-size: 1.5rem; font-weight: 800;
+      background: #f1f8e9; border: 2px dashed #9ccc65; border-radius: 12px;
+    }
+    .slot.found { background: #c5e1a5; border-style: solid; border-color: #558b2f; color: #1b5e20; }
+    .card {
+      background: #fff;
+      border: 3px solid #a5d6a7;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 6px 0 #c5e1a5;
       text-align: center;
     }
-    main { padding: 2rem; }
-    h1 { margin: 0 0 .5rem; font-size: 2rem; }
-    p { margin: 0; opacity: .7; }
+    .card h2 { margin-top: 0; color: #1b5e20; }
+    .riddle { font-size: 1.15rem; line-height: 1.5; background: #f1f8e9; border-radius: 14px; padding: 1rem; }
+    .counter { font-weight: 700; color: #558b2f; }
+    form { display: flex; gap: .5rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center; }
+    input[type="text"] {
+      flex: 1 1 200px;
+      font-size: 1.1rem; padding: .7rem 1rem;
+      border: 3px solid #a5d6a7; border-radius: 999px;
+      outline: none; text-align: center;
+    }
+    input[type="text"]:focus { border-color: #2e7d32; }
+    button {
+      font-size: 1.05rem; font-weight: 700;
+      padding: .7rem 1.3rem;
+      border: none; border-radius: 999px;
+      background: #43a047; color: #fff; cursor: pointer;
+      box-shadow: 0 4px 0 #2e7d32;
+    }
+    button:active { transform: translateY(3px); box-shadow: none; }
+    button.ghost { background: #fff; color: #2e7d32; border: 2px solid #a5d6a7; box-shadow: none; }
+    .hint { margin-top: .8rem; font-size: .95rem; color: #6d4c41; min-height: 1.4em; }
+    .feedback { margin-top: .6rem; font-weight: 700; min-height: 1.6em; }
+    .feedback.ok { color: #2e7d32; }
+    .feedback.no { color: #c62828; }
+    .shake { animation: shake .4s; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+    .big-letter {
+      font-size: 4rem; font-weight: 900; color: #1b5e20;
+      background: #c5e1a5; border-radius: 20px;
+      width: 110px; height: 110px; display: grid; place-items: center;
+      margin: 0 auto 1rem;
+      animation: pop .5s;
+    }
+    @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    .treasure { font-size: 4rem; }
+    .word { font-size: 2rem; font-weight: 900; letter-spacing: .3rem; color: #1b5e20; }
+    footer { text-align: center; margin: 1.2rem 0; color: #689f38; font-size: .9rem; }
+    .restart { margin-top: 1rem; }
+    .confetti { position: fixed; top: -20px; width: 12px; height: 18px; z-index: 99; animation: fall 3.5s linear forwards; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
   </style>
 </head>
 <body>
-  <main>
-    <h1>lam_261006</h1>
-    <p>Deploy ativo via GitHub Pages.</p>
-  </main>
+  <div class="wrap">
+    <header>
+      <div style="font-size:2.5rem">🌿🔍🌿</div>
+      <h1>Caça ao Tesouro</h1>
+      <p class="sub">Colégio Helena • Clube dos Exploradores</p>
+    </header>
+
+    <div class="progress" id="progress" hidden>
+      <div class="bar"><div id="barfill"></div></div>
+      <div class="letters" id="letters"></div>
+    </div>
+
+    <main class="card" id="app"></main>
+
+    <footer>Feito com 💚 por Lívia, Alice e Maria Luíza — 4º A</footer>
+  </div>
+
+  <script>
+    const STAGES = [
+      {
+        letter: "J",
+        riddle: "Sou vermelhinha com bolinhas pretas, tenho asinhas e passeio pelas folhas. Quem sou eu?",
+        answers: ["joaninha", "joaninhas"],
+        hint: "Começa com a letra J e adora passear nas plantas. 🐞"
+      },
+      {
+        letter: "A",
+        riddle: "Faço zum-zum, tenho listras amarelas e pretas e fabrico um alimento bem docinho. Quem sou eu?",
+        answers: ["abelha", "abelhas"],
+        hint: "Começa com a letra A e mora numa colmeia. 🐝"
+      },
+      {
+        letter: "R",
+        riddle: "Sou uma flor muito cheirosa. Posso ser vermelha, branca ou cor-de-rosa, mas cuidado com meus espinhos!",
+        answers: ["rosa", "rosas"],
+        hint: "Começa com a letra R. 🌹"
+      },
+      {
+        letter: "D",
+        riddle: "Sou uma flor amarela que vira um pompom branquinho. As crianças me assopram e minhas sementinhas voam!",
+        answers: ["dentedeleao"],
+        hint: "Meu nome tem três partes e começa com D. É só escrever tudo junto! 🌼"
+      },
+      {
+        letter: "I",
+        riddle: "Sou uma árvore brasileira que perde as folhas e fica todinha florida: amarela, rosa ou roxa!",
+        answers: ["ipe"],
+        hint: "Começa com I e tem só 3 letrinhas. 🌳"
+      },
+      {
+        letter: "M",
+        riddle: "Moro na terra fofa e úmida, não tenho pernas e ajudo as plantas a crescer fortes e saudáveis!",
+        answers: ["minhoca", "minhocas"],
+        hint: "Começa com M e adora aparecer depois da chuva. 🪱"
+      }
+    ];
+    const KEY = "caca-tesouro-helena-v1";
+
+    function load() {
+      try {
+        const s = JSON.parse(localStorage.getItem(KEY));
+        if (s && typeof s.stage === "number" && Array.isArray(s.letters)) return s;
+      } catch (e) { /* começa do zero */ }
+      return { started: false, stage: 0, letters: [], celebrate: null };
+    }
+    let state = load();
+    function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+    function norm(s) {
+      return (s || "").toLowerCase()
+        .normalize("NFD").replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z]/g, "");
+    }
+
+    const app = document.getElementById("app");
+    const progress = document.getElementById("progress");
+
+    function renderProgress() {
+      if (!state.started) { progress.hidden = true; return; }
+      progress.hidden = false;
+      document.getElementById("barfill").style.width = (state.letters.length / STAGES.length * 100) + "%";
+      const box = document.getElementById("letters");
+      box.innerHTML = "";
+      for (let i = 0; i < STAGES.length; i++) {
+        const d = document.createElement("div");
+        d.className = "slot" + (state.letters[i] ? " found" : "");
+        d.textContent = state.letters[i] || "?";
+        box.appendChild(d);
+      }
+    }
+
+    function render() {
+      renderProgress();
+      if (!state.started) return renderStart();
+      if (state.celebrate) return renderSuccess();
+      if (state.stage >= STAGES.length) return renderFinal();
+      return renderStage();
+    }
+
+    function renderStart() {
+      app.innerHTML = `
+        <h2>🌳 A aventura vai começar! 🌳</h2>
+        <p class="riddle">O <strong>Baú Verde</strong> do Colégio Helena está escondido!
+        Para achá-lo, decifre os <strong>6 enigmas da natureza</strong>.
+        Cada resposta certa revela uma <strong>letra secreta</strong>.
+        Junte todas as letras e descubra onde está o tesouro! 🗺️</p>
+        <p><button id="start">Começar a aventura! 🚀</button></p>`;
+      document.getElementById("start").onclick = () => {
+        state.started = true; save(); render();
+      };
+    }
+
+    function renderStage() {
+      const s = STAGES[state.stage];
+      app.innerHTML = `
+        <p class="counter">🌱 Pista ${state.stage + 1} de ${STAGES.length} 🌱</p>
+        <p class="riddle">${s.riddle}</p>
+        <form id="form">
+          <input type="text" id="answer" placeholder="Sua resposta..." autocomplete="off" aria-label="Sua resposta">
+          <button type="submit">Responder ✅</button>
+        </form>
+        <p><button class="ghost" id="hintbtn">💡 Preciso de uma dica</button></p>
+        <p class="hint" id="hint"></p>
+        <p class="feedback" id="feedback"></p>
+        <p class="restart"><button class="ghost" id="restart">🔄 Recomeçar</button></p>`;
+      const input = document.getElementById("answer");
+      input.focus();
+      document.getElementById("hintbtn").onclick = () => {
+        document.getElementById("hint").textContent = s.hint;
+      };
+      document.getElementById("restart").onclick = reset;
+      document.getElementById("form").onsubmit = (e) => {
+        e.preventDefault();
+        const fb = document.getElementById("feedback");
+        if (s.answers.includes(norm(input.value))) {
+          state.letters.push(s.letter);
+          state.stage++;
+          state.celebrate = s.letter;
+          save(); render();
+        } else {
+          fb.textContent = "Ops, tente de novo! Você consegue! 💪";
+          fb.className = "feedback no";
+          app.classList.remove("shake");
+          void app.offsetWidth;
+          app.classList.add("shake");
+        }
+      };
+    }
+
+    function renderSuccess() {
+      app.innerHTML = `
+        <h2>🎉 Resposta certa! 🎉</h2>
+        <div class="big-letter">${state.celebrate}</div>
+        <p>Você ganhou a letra <strong>${state.celebrate}</strong>!</p>
+        <p><button id="next">${state.stage >= STAGES.length ? "Descobrir o tesouro! 🗝️" : "Próxima pista ➜"}</button></p>`;
+      document.getElementById("next").onclick = () => {
+        state.celebrate = null; save(); render();
+      };
+    }
+
+    function renderFinal() {
+      const word = state.letters.join("");
+      app.innerHTML = `
+        <div class="treasure">🎉🏆🎉</div>
+        <h2>PARABÉNS, EXPLORADORES!</h2>
+        <p>As letras secretas formam a palavra:</p>
+        <p class="word">${word}</p>
+        <p class="riddle">🗺️ O <strong>Baú Verde</strong> está escondido no
+        <strong>JARDIM do Colégio Helena</strong>!
+        Corram até lá com um adulto e procurem bem! 🌷🌻🌷</p>
+        <p class="restart"><button id="again">🔄 Jogar de novo</button></p>`;
+      document.getElementById("again").onclick = reset;
+      confetti();
+    }
+
+    function reset() {
+      localStorage.removeItem(KEY);
+      state = { started: false, stage: 0, letters: [], celebrate: null };
+      render();
+    }
+
+    function confetti() {
+      const colors = ["#43a047", "#fdd835", "#fb8c00", "#e53935", "#1e88e5", "#8e24aa"];
+      for (let i = 0; i < 70; i++) {
+        const c = document.createElement("div");
+        c.className = "confetti";
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.background = colors[i % colors.length];
+        c.style.animationDelay = (Math.random() * 1.5) + "s";
+        c.style.transform = "rotate(" + Math.random() * 360 + "deg)";
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5200);
+      }
+    }
+
+    render();
+  </script>
 </body>
 </html>
